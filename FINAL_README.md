@@ -1,0 +1,329 @@
+# 🎬 短剧智能体 - AI 剧本创作系统
+
+> 华中科技大学首届 AI 智能体开发大赛 · 短剧智能体赛道参赛作品
+
+**在线体验：** [点击体验短剧智能体](http://www.azureflame.cloud/chat/3x4mmLXbxsAQjDuc)
+
+---
+
+## 📌 项目简介
+
+本项目旨在通过 AI 智能体技术，让用户通过**自然语言交流**即可完成专业短剧和个人短视频的**故事创作**与**拍摄脚本编写**。
+
+系统结合了大语言模型（LLM）、知识库检索（RAG）、文生图技术，构建了从「数据采集 → 知识沉淀 → 智能创作 → 内容输出」的完整 AI 创作闭环。
+
+### 核心设计理念
+
+- **数据驱动**：基于真实抖音爆款短剧数据提炼创作规律，而非凭空生成
+- **渐进式引导**：五步对话法逐步明确需求，避免"一句话生成垃圾"
+- **知识库赋能**：6 大专业知识库持续为创作提供参考依据
+- **全流程自动化**：从视频下载到剧本导出，全程 AI 辅助，无需专业背景
+
+---
+
+## ✨ 核心功能
+
+### 🎯 智能剧本创作（核心 ChatFlow）
+
+通过五步对话引导，逐步完成专业剧本创作：
+
+| 步骤 | 功能 | 说明 |
+|------|------|------|
+| 1️⃣ 需求理解 | 意图解析 | 理解用户题材方向与创作目标 |
+| 2️⃣ 故事构思 | 大纲生成 | 生成故事框架、人物关系与核心冲突 |
+| 3️⃣ 剧情细化 | 内容扩展 | 扩写场景细节、对话与情感节拍 |
+| 4️⃣ 视觉设计 | 场景配图 | 自动生成场景概念图，可视化剧本 |
+| 5️⃣ 成品输出 | 文档导出 | 生成带插图的 DOCX 格式专业剧本 |
+
+**特色亮点：**
+- 🗣️ 自然语言交互，无需专业编剧知识
+- 📚 结合 6 大专业知识库，创作有据可依
+- 🖼️ 场景自动配图，剧本内容可视化
+- 📄 一键导出专业格式剧本文档
+- 🔄 支持多轮迭代优化，随时调整方向
+
+### 🔥 热点知识库自动更新
+
+- **定时 Workflow**：每日自动抓取热门话题、短视频趋势
+- **自动入库**：新鲜内容实时补充知识库，保持时效性
+- **灵感来源**：让 AI 创作紧跟当下热点，而非脱离现实
+
+### 🎨 文生图插件（自研）
+
+- 基于 七牛云提供的gemini api接口 的文生图能力
+- 自动将剧本场景描述转化为概念图
+- 可作为独立 Workflow 单独调用
+- 平均出图时间：8–10 秒
+
+---
+
+## 🏗️ 技术架构
+
+### 基础平台
+
+| 组件 | 技术 | 说明 |
+|------|------|------|
+| AI 应用平台 | [Dify](https://github.com/langgenius/dify) (Apache 2.0) | ChatFlow / Workflow 编排 |
+| 容器化 | Docker + Docker Compose | 一键部署 |
+| 关系数据库 | PostgreSQL | 存储对话历史与用户数据 |
+| 缓存层 | Redis | 提升响应速度 |
+| 向量数据库 | Weaviate | 知识库检索（RAG） |
+
+### AI 能力
+
+| 能力 | 技术 | 用途 |
+|------|------|------|
+| 文本生成 | GPT-4 / DeepSeek / 通义千问 | 剧本创作、评分、优化 |
+| 向量化 | Embedding 模型 | 知识库语义检索 |
+| 文生图 | DALL-E 3 / Stable Diffusion | 场景配图生成 |
+| 语音识别 | Whisper / FunASR | 视频字幕提取 |
+
+### 知识库体系
+
+| 知识库 | 内容来源 | 用途 |
+|--------|----------|------|
+| 剧本写作理论 | 三幕式结构、人物弧光等经典理论 | 指导故事结构 |
+| 视听语言 | 镜头语言、蒙太奇手法 | 优化场景描述 |
+| 短视频爆款分析 | 真实抖音数据提炼（本项目自建） | 提升传播力 |
+| 对话写作技巧 | 经典台词与情感表达案例 | 优化角色对话 |
+| 热点话题库 | 每日自动更新 | 创作灵感来源 |
+| 历史剧本库 | 历史优秀创作记录 | 风格参考 |
+
+---
+
+## 📂 项目结构
+
+```
+Short_video_agent/
+├── docker/                    # 部署配置
+│   ├── docker-compose.yaml
+│   └── .env.example           # 环境变量模板
+├── data_pipeline/             # 数据处理管道 ⭐
+│   ├── README.md
+│   ├── requirements.txt
+│   ├── douyin-downloader/     # 视频下载（含 new.py 批量脚本）
+│   ├── extract_douyin_transcripts.py  # Whisper 字幕提取
+│   ├── step1_collect_files.py         # FunASR 文件收集
+│   ├── check_format.py                # 格式检查
+│   ├── collect_transcripts.py         # 合并台词本
+│   ├── score_dialogues_deepseek.py    # AI 多维度评分
+│   ├── dialogue_enhancer.py           # 内容优化
+│   ├── format_json.py                 # JSON 格式化
+│   ├── upload.py                      # 上传至 Dify 知识库
+│   └── batch_process_docs.py          # 批量生成创作方法论
+├── knowledge_base/            # 知识库原始数据
+└── docs/                      # 项目文档
+```
+
+---
+
+## 📊 数据处理管道
+
+项目构建了完整的抖音短剧数据采集与处理管道，从真实数据中提炼创作规律，反哺知识库。
+
+### 处理流程
+
+```
+抖音视频链接（urls.txt）
+        ↓
+【1. 批量下载】douyin-downloader/new.py
+        ↓
+【2. 语音识别】
+    ├── Whisper（精度高，适合多语言）→ extract_douyin_transcripts.py
+    └── FunASR（速度快，适合中文）  → 直接输出转录文件
+        ↓
+【3. 文本整理】
+    ├── step1_collect_files.py  （收集 FunASR 输出）
+    ├── check_format.py         （格式校验）
+    └── collect_transcripts.py  （合并为台词本）
+        ↓
+【4. AI 多维度评分】score_dialogues_deepseek.py
+    ├── S 级：情节紧凑，冲突强，情感饱满
+    ├── A 级：逻辑清晰，有明显亮点
+    ├── B 级：基本流畅，有改进空间
+    └── C 级：结构松散，质量较低
+        ↓
+【5. 内容优化】dialogue_enhancer.py（仅处理 S/A 级）
+    ├── 提取核心冲突与情感节拍
+    ├── 标注叙事技巧与场景模式
+    └── 生成创作启示
+        ↓
+【6. 格式化与上传】
+    ├── format_json.py          （结构化处理）
+    ├── batch_process_docs.py   （生成创作方法论文档）
+    └── upload.py               （断点续传上传至 Dify）
+        ↓
+    Dify 知识库（RAG 检索）
+        ↓
+    短剧智能体创作参考
+```
+
+### 关键技术
+
+| 阶段 | 工具 | 特点 |
+|------|------|------|
+| 视频下载 | douyin-downloader + new.py | 支持批量下载，断点重试 |
+| 语音识别 | Whisper / FunASR | 双方案，精度与速度可选 |
+| AI 评分 | DeepSeek API（via SiliconFlow） | 多维度评分，自动分级 |
+| 内容优化 | DeepSeek API | 提取高价值内容结构 |
+| 知识库构建 | Dify API | 自动分块、向量化、入库，支持断点续传 |
+
+---
+
+## 🎨 核心 Workflow 说明
+
+### 1. 剧本创作 ChatFlow
+
+```
+用户输入
+    ↓
+需求分析 ──→ 知识库召回（RAG）
+    ↓
+故事大纲生成 ──→ 知识库召回
+    ↓
+剧情扩展 ──→ 知识库召回
+    ↓
+场景配图 ──→ 文生图插件
+    ↓
+格式化输出 ──→ DOCX 剧本文件
+```
+
+**设计亮点：**
+- 条件分支：根据用户反馈灵活调整创作方向
+- 循环节点：支持多轮修改，直到用户满意
+- 并行处理：多场景配图同时生成，节省时间
+- 知识召回：每个关键节点都有专属知识库支撑
+
+### 2. 热点更新 Workflow
+
+**触发方式：** Cron 定时任务（每日凌晨 2:00）
+
+```
+爬取热搜（抖音 / 微博 / 快手 / 哔哩哔哩 ）
+    ↓
+内容清洗与去重
+    ↓
+提取关键信息与情感标签
+    ↓
+向量化存入 Weaviate
+    ↓
+发送更新报告（Webhook）
+```
+
+### 3. 文生图 Workflow
+
+**输入：** 场景描述文本  
+**输出：** 场景概念图（PNG/JPG）
+
+- 自动优化输入为高质量 Prompt
+- 维护整体视觉风格一致性
+- 平均 8–10 秒完成出图
+
+---
+
+## 💡 创新亮点
+
+### 1. 五步对话式创作法
+区别于"一句话生成"，采用渐进式引导，让 AI 充分理解创作意图，生成有深度的剧本内容。
+
+### 2. 真实数据驱动的知识库
+基于真实抖音爆款短剧数据（而非理论假设），提炼高频情节模式、对话技巧和叙事结构，让创作有据可依。
+
+### 3. 文生图深度融合
+不是简单的工具调用，而是将图像生成有机融入创作流程，让剧本从文字走向视觉呈现。
+
+### 4. 完整数据处理管道
+从视频下载到知识库构建，提供可复现的完整工具链，数据质量可控、可验证。
+
+### 5. 动态热点感知
+知识库每日自动更新，确保 AI 创作紧跟时代热点，而非只会"写过时的故事"。
+
+---
+
+## 🚀 快速部署
+
+### 环境要求
+
+- Docker 20.10+
+- Docker Compose 2.0+
+- 内存 8GB+
+- 磁盘 50GB+
+
+### 部署步骤
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/KirisameRyan/Short_video_agent.git
+cd Short_video_agent
+
+# 2. 配置环境变量
+cp docker/.env.example docker/.env
+# 编辑 .env，填入你的 API Keys
+
+# 3. 启动服务
+cd docker
+docker-compose up -d
+
+# 4. 访问服务
+# Web UI: http://localhost:80
+# API:    http://localhost:80/api
+```
+
+### 关键环境变量
+
+```bash
+# LLM
+OPENAI_API_KEY=your_key
+OPENAI_API_BASE=https://api.openai.com/v1
+
+# 文生图
+IMAGE_MODEL=dall-e-3
+
+# 数据库
+POSTGRES_PASSWORD=your_secure_password
+```
+
+---
+
+## 🛠️ 开发计划
+
+- [ ] **自我学习**：基于用户反馈持续优化创作风格
+- [ ] **多模态输入**：支持上传图片/视频作为灵感素材  
+- [ ] **语音交互**：语音输入剧本需求
+- [ ] **协作模式**：多人实时共同编辑剧本
+- [ ] **导演模式**：生成分镜头脚本与拍摄指南
+- [ ] **视频预览**：基于剧本自动生成视频分镜动画
+
+---
+
+## 📄 开源协议
+
+本项目基于 [Dify](https://github.com/langgenius/dify) 二次开发，遵循 **Apache 2.0 License**。
+
+- 原始项目：https://github.com/langgenius/dify
+- 本项目：华中科技大学 AI 智能体开发大赛参赛作品
+
+---
+
+## 🙏 致谢
+
+- [Dify](https://github.com/langgenius/dify) — AI 应用开发平台
+- [OpenAI Whisper](https://github.com/openai/whisper) — 语音识别模型
+- [DeepSeek](https://www.deepseek.com) — 评分与优化能力
+- [douyin-downloader](https://github.com/jiji262/douyin-downloader) — 抖音视频下载工具
+- [FunASR](https://github.com/alibaba-damo-academy/FunASR) — 阿里达摩院语音识别
+
+---
+
+## 📞 联系方式
+
+- **在线体验：** [http://www.azureflame.cloud/chat/3x4mmLXbxsAQjDuc](http://www.azureflame.cloud/chat/3x4mmLXbxsAQjDuc)
+- **GitHub：** https://github.com/KirisameRyan/Short_video_agent
+- **邮箱：** U202410538@hust.edu.cn
+
+---
+
+<p align="center">
+  <b>🏆 华中科技大学首届 AI 智能体开发大赛 · 短剧智能体赛道</b><br>
+  <i>让 AI 成为每个人的专业编剧</i>
+</p>

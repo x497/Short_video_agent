@@ -73,9 +73,9 @@
 
 | 能力 | 技术 | 用途 |
 |------|------|------|
-| 文本生成 | GPT-4 / DeepSeek / 通义千问 | 剧本创作、评分、优化 |
+| 文本生成 | Gemini / DeepSeek / Qwen | 剧本创作、评分、优化 |
 | 向量化 | Embedding 模型 | 知识库语义检索 |
-| 文生图 | DALL-E 3 / Stable Diffusion | 场景配图生成 |
+| 文生图 | Gemini | 场景配图生成 |
 | 语音识别 | Whisper / FunASR | 视频字幕提取 |
 
 ### 知识库体系
@@ -88,32 +88,6 @@
 | 对话写作技巧 | 经典台词与情感表达案例 | 优化角色对话 |
 | 热点话题库 | 每日自动更新 | 创作灵感来源 |
 | 历史剧本库 | 历史优秀创作记录 | 风格参考 |
-
----
-
-## 📂 项目结构
-
-```
-Short_video_agent/
-├── docker/                    # 部署配置
-│   ├── docker-compose.yaml
-│   └── .env.example           # 环境变量模板
-├── data_pipeline/             # 数据处理管道 ⭐
-│   ├── README.md
-│   ├── requirements.txt
-│   ├── douyin-downloader/     # 视频下载（含 new.py 批量脚本）
-│   ├── extract_douyin_transcripts.py  # Whisper 字幕提取
-│   ├── step1_collect_files.py         # FunASR 文件收集
-│   ├── check_format.py                # 格式检查
-│   ├── collect_transcripts.py         # 合并台词本
-│   ├── score_dialogues_deepseek.py    # AI 多维度评分
-│   ├── dialogue_enhancer.py           # 内容优化
-│   ├── format_json.py                 # JSON 格式化
-│   ├── upload.py                      # 上传至 Dify 知识库
-│   └── batch_process_docs.py          # 批量生成创作方法论
-├── knowledge_base/            # 知识库原始数据
-└── docs/                      # 项目文档
-```
 
 ---
 
@@ -199,6 +173,8 @@ Short_video_agent/
 **触发方式：** Cron 定时任务（每日凌晨 2:00）
 
 ```
+定时触发
+    ↓
 爬取热搜（抖音 / 微博 / 快手 / 哔哩哔哩 ）
     ↓
 内容清洗与去重
@@ -206,8 +182,7 @@ Short_video_agent/
 提取关键信息与情感标签
     ↓
 向量化存入 Weaviate
-    ↓
-发送更新报告（Webhook）
+
 ```
 
 ### 3. 文生图 Workflow
@@ -215,7 +190,7 @@ Short_video_agent/
 **输入：** 场景描述文本  
 **输出：** 场景概念图（PNG/JPG）
 
-- 自动优化输入为高质量 Prompt
+- agent自行调用
 - 维护整体视觉风格一致性
 - 平均 8–10 秒完成出图
 
@@ -269,30 +244,16 @@ docker-compose up -d
 # API:    http://localhost:80/api
 ```
 
-### 关键环境变量
-
-```bash
-# LLM
-OPENAI_API_KEY=your_key
-OPENAI_API_BASE=https://api.openai.com/v1
-
-# 文生图
-IMAGE_MODEL=dall-e-3
-
-# 数据库
-POSTGRES_PASSWORD=your_secure_password
-```
-
 ---
 
 ## 🛠️ 开发计划
 
 - [ ] **自我学习**：基于用户反馈持续优化创作风格
-- [ ] **多模态输入**：支持上传图片/视频作为灵感素材  
+- [√] **多模态输入**：支持上传图片作为灵感素材  
 - [ ] **语音交互**：语音输入剧本需求
 - [ ] **协作模式**：多人实时共同编辑剧本
-- [ ] **导演模式**：生成分镜头脚本与拍摄指南
-- [ ] **视频预览**：基于剧本自动生成视频分镜动画
+- [√] **导演模式**：生成分镜头脚本与拍摄指南
+- [×] **视频预览**：基于剧本自动生成视频分镜动画
 
 ---
 
